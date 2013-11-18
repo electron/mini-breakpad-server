@@ -7,6 +7,9 @@
   },
   "dependencies": {
     "express": "3.x",
+    "formidable": "~1.0.14",
+    "mkdirp": "~0.3.5",
+    "node-uuid": "~1.4.1",
     "minidump": "0.1.0"
   },
   "devDependencies": {
