@@ -13,8 +13,8 @@ class Record
     @id ?= uuid.v4()
     @time ?= Date.now()
 
-  # Public: Returns the presentation to be stored in database.
-  getRawPresentation: ->
+  # Public: Returns the representation to be stored in database.
+  getRawRepresentation: ->
     time: @time, fields: @fields
 
   # Public: Parse web request to get the record.

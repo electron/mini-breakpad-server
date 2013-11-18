@@ -17,7 +17,7 @@ class Database extends EventEmitter
 
   # Public: Save a record to database.
   saveRecord: (record, callback) ->
-    @db.set record.id, record.getRawPresentation()
+    @db.set record.id, record.getRawRepresentation()
     callback null
 
 module.exports = Database
