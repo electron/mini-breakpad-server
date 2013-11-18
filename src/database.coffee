@@ -7,7 +7,7 @@ class Database extends EventEmitter
   db: null
 
   # Public: Create a new Database with path to {filename}
-  constructor: (filename) ->
+  constructor: (filename=path.join('pool', 'database', 'dirty', 'db')) ->
     dist = path.resolve filename, '..'
     mkdirp dist, (err) =>
       throw new Error("Cannot create directory: #{dist}") if err?
@@ -17,9 +17,7 @@ class Database extends EventEmitter
 
   # Public: Save a record to database.
   saveRecord: (record, callback) ->
-    @db.set record.id, record
+    @db.set record.id, record.getRawPresentation()
     callback null
 
-# Public: Create a new Database whose name is {name}
-module.exports = (name='database') ->
-  new Database(path.join 'pool', 'database', 'dirty', name)
+module.exports = Database

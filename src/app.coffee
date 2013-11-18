@@ -1,11 +1,11 @@
 express = require 'express'
 saver = require './saver'
-db = require './db'
+Database = require './database'
 
 app = express()
 
-database = db()
-database.on 'load', ->
+db = new Database
+db.on 'load', ->
   app.listen 1127
   console.log 'Listening on port 1127'
 
@@ -17,7 +17,7 @@ app.use (err, req, res, next) ->
   res.send 500, "Bad things happened:<br/> #{err.message}"
 
 app.post '/post', (req, res, next) ->
-  saver.saveRequest req, database, (err, filename) ->
+  saver.saveRequest req, db, (err, filename) ->
     return next err if err?
 
     console.log 'saved', filename

@@ -1,26 +1,21 @@
 fs = require 'fs'
 path = require 'path'
-formidable = require 'formidable'
 mkdirp = require 'mkdirp'
-uuid = require 'node-uuid'
+Record = require './record'
 
-exports.saveRequest = (req, database, callback) ->
-  form = new formidable.IncomingForm()
-  form.parse req, (error, fields, files) ->
-    unless files.upload_file_minidump?.name is 'minidump.dmp'
-      return callback new Error('Invalid breakpad upload')
+exports.saveRequest = (req, db, callback) ->
+  Record.createFromRequest req, (err, record) ->
+    return callback new Error("Invalid breakpad request") if err?
 
-    dist = "pool/files/minidump/#{fields.ver}"
+    dist = "pool/files/minidump/#{record.version}"
     mkdirp dist, (err) ->
       return callback new Error("Cannot create directory: #{dist}") if err?
 
-      id = uuid.v4()
-      filename = path.join dist, id
-      fs.rename files.upload_file_minidump.path, filename, (err) ->
+      filename = path.join dist, record.id
+      fs.rename record.path, filename, (err) ->
         return callback new Error("Cannot create file: #{filename}") if err?
 
-        record = id: id, version: fields.ver, product: fields.prod
-        database.saveRecord record, (err) ->
+        db.saveRecord record, (err) ->
           return callback new Error("Cannot save record to database") if err?
 
           callback null, filename
