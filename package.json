@@ -10,6 +10,7 @@
     "formidable": "~1.0.14",
     "mkdirp": "~0.3.5",
     "node-uuid": "~1.4.1",
+    "dirty": "0.9.7",
     "minidump": "0.1.0"
   },
   "devDependencies": {
