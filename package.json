@@ -2,6 +2,9 @@
   "name": "mini-breakpad-server",
   "description": "Minimum breakpad crash reports collecting server",
   "version": "0.1.0",
+  "bin": {
+    "mini-breakpad-server": "bin/mini-breakpad-server"
+  },
   "scripts": {
     "prepublish": "grunt coffee"
   },
