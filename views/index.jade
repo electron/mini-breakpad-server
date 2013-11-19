@@ -1,0 +1,10 @@
+!!!5
+html
+  head
+    title Crash Reports
+  body
+    h1 Crash Reports
+    ol
+      each record in records
+        li
+          a(href='view?id=' + record.id)= record.product + ' v' + record.version + ' ' + record.time.toDateString()

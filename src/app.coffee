@@ -1,3 +1,4 @@
+path = require 'path'
 express = require 'express'
 saver = require './saver'
 Database = require './database'
@@ -9,6 +10,8 @@ db.on 'load', ->
   app.listen 1127
   console.log 'Listening on port 1127'
 
+app.set 'views', path.resolve(__dirname, '..', 'views')
+app.set 'view engine', 'jade'
 app.use express.json()
 app.use express.urlencoded()
 app.use express.methodOverride()
@@ -22,3 +25,6 @@ app.post '/post', (req, res, next) ->
 
     console.log 'saved', filename
     res.end()
+
+app.get '/', (req, res, next) ->
+  res.render 'index', records: db.getAllRecords()
