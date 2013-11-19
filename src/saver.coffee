@@ -15,6 +15,7 @@ exports.saveRequest = (req, db, callback) ->
       fs.rename record.path, filename, (err) ->
         return callback new Error("Cannot create file: #{filename}") if err?
 
+        record.path = filename
         db.saveRecord record, (err) ->
           return callback new Error("Cannot save record to database") if err?
 

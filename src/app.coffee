@@ -1,5 +1,6 @@
 path = require 'path'
 express = require 'express'
+reader = require './reader'
 saver = require './saver'
 Database = require './database'
 
@@ -27,4 +28,12 @@ app.post '/post', (req, res, next) ->
     res.end()
 
 app.get '/', (req, res, next) ->
-  res.render 'index', records: db.getAllRecords()
+  res.render 'index', title: 'Crash Reports', records: db.getAllRecords()
+
+app.get '/view/:id', (req, res, next) ->
+  db.restoreRecord req.params.id, (err, record) ->
+    return next err if err?
+
+    reader.getStackTraceFromRecord record, (err, report) ->
+      return next err if err?
+      res.render 'view', {title: 'Crash Report', report}

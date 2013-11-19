@@ -22,8 +22,11 @@ class Database extends EventEmitter
     callback null
 
   # Public: Restore a record from database according to its id.
-  restoreRecord: (id) ->
-    Record.unserialize id, @db.get(id)
+  restoreRecord: (id, callback) ->
+    raw = @db.get(id)
+    return callback new Error("Record is not in database") unless raw?
+
+    callback null, Record.unserialize(id, @db.get(id))
 
   # Public: Returns all records as an array.
   getAllRecords: ->
