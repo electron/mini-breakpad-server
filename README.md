@@ -10,8 +10,9 @@ Minimum collecting server for crash reports sent by
 * Collecting crash reports with minidump files.
 * Simple web interface for viewing translated crash reports.
 
-## Build
+## Run
 
 * `npm install .`
 * `grunt`
+* Put your breakpad symbols under `pool/symbols/PRODUCT_NAME/PRODUCT_VERSION/PRODUCT_NAME.breakpad.syms`
 * `node lib/app.js`
