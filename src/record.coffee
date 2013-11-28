@@ -18,7 +18,7 @@ class Record
   @createFromRequest: (req, callback) ->
     form = new formidable.IncomingForm()
     form.parse req, (error, fields, files) ->
-      unless files.upload_file_minidump?.name is 'minidump.dmp'
+      unless files.upload_file_minidump?.name?
         return callback new Error('Invalid breakpad upload')
 
       record = new Record
