@@ -1,4 +1,4 @@
-fs = require 'fs'
+fs = require 'fs-plus'
 path = require 'path'
 mkdirp = require 'mkdirp'
 Record = require './record'
@@ -12,7 +12,7 @@ exports.saveRequest = (req, db, callback) ->
       return callback new Error("Cannot create directory: #{dist}") if err?
 
       filename = path.join dist, record.id
-      fs.rename record.path, filename, (err) ->
+      fs.copy record.path, filename, (err) ->
         return callback new Error("Cannot create file: #{filename}") if err?
 
         record.path = filename
