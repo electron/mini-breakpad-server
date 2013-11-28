@@ -36,4 +36,5 @@ app.get '/view/:id', (req, res, next) ->
 
     reader.getStackTraceFromRecord record, (err, report) ->
       return next err if err?
-      res.render 'view', {title: 'Crash Report', report}
+      fields = record.fields
+      res.render 'view', {title: 'Crash Report', report, fields}
