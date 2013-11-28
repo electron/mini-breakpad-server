@@ -7,7 +7,7 @@ exports.saveRequest = (req, db, callback) ->
   Record.createFromRequest req, (err, record) ->
     return callback new Error("Invalid breakpad request") if err?
 
-    dist = "pool/files/minidump/#{record.version}"
+    dist = "pool/files/minidump"
     mkdirp dist, (err) ->
       return callback new Error("Cannot create directory: #{dist}") if err?
 
