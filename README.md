@@ -14,5 +14,5 @@ Minimum collecting server for crash reports sent by
 
 * `npm install .`
 * `grunt`
-* Put your breakpad symbols under `pool/symbols/PRODUCT_NAME/PRODUCT_VERSION/PRODUCT_NAME.breakpad.syms`
+* Put your breakpad symbols under `pool/symbols/PRODUCT_NAME`
 * `node lib/app.js`
