@@ -19,7 +19,8 @@
     "minidump": "0.3.0",
     "mkdirp": "~0.3.5",
     "node-uuid": "~1.4.1",
-    "temp": "0.7.0"
+    "temp": "0.7.0",
+    "wrench": "1.5.x"
   },
   "devDependencies": {
     "coffee-script": "~1.6.2",
