@@ -1,4 +1,6 @@
-fs     = require 'fs'
+fs     = require 'fs-plus'
+glob   = require 'glob'
+mkdirp = require 'mkdirp'
 path   = require 'path'
 temp   = require 'temp'
 os     = require 'os'
@@ -37,7 +39,7 @@ class WebHook
           stream.pipe file
 
   extractFile: (dir, filename) ->
-    targetDirectory = path.join(dir, "#{filename}-unzipped")
+    targetDirectory = "#{filename}-unzipped"
     unzipper = new DecompressZip filename
     unzipper.on 'error', (error) =>
       console.log 'Failed to decompress', filename, error
@@ -49,8 +51,16 @@ class WebHook
     unzipper.extract path: targetDirectory
 
   copySymbolFiles: (dir, targetDirectory) ->
-    console.log 'copySymbolFiles', targetDirectory
-    @cleanup dir
+    glob '*.breakpad.syms', cwd: targetDirectory, (error, dirs) =>
+      if error?
+        console.log 'Failed to find breakpad symbols in', targetDirectory, error
+        @cleanup dir
+        return
+
+      symbolsDirectory = path.join 'pool', 'symbols'
+      for symbol in dirs
+        fs.copySync path.join(targetDirectory, symbol), symbolsDirectory
+      @cleanup dir
 
   cleanup: (dir) ->
     wrench.rmdirSyncRecursive dir, true
