@@ -3,8 +3,10 @@ express = require 'express'
 reader = require './reader'
 saver = require './saver'
 Database = require './database'
+WebHook = require './webhook'
 
 app = express()
+webhook = new WebHook
 
 db = new Database
 db.on 'load', ->
@@ -19,6 +21,13 @@ app.use express.methodOverride()
 app.use app.router
 app.use (err, req, res, next) ->
   res.send 500, "Bad things happened:<br/> #{err.message}"
+
+app.post '/webhook', (req, res, next) ->
+  webhook.onRequest req, (err) ->
+    return next err if err?
+
+    console.log 'posted to webhook'
+    res.end()
 
 app.post '/post', (req, res, next) ->
   saver.saveRequest req, db, (err, filename) ->
