@@ -25,6 +25,8 @@ app.use (err, req, res, next) ->
 
 app.post '/webhook', (req, res, next) ->
   webhook.onRequest req
+
+  console.log 'webhook requested', req.body.repository.full_name
   res.end()
 
 app.post '/post', (req, res, next) ->
