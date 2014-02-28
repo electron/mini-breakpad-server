@@ -9,23 +9,28 @@
     "prepublish": "grunt coffee"
   },
   "dependencies": {
+    "decompress-zip": "0.0.4",
+    "dirty": "0.9.7",
     "express": "3.x",
-    "jade": "~0.35.0",
     "formidable": "~1.0.14",
+    "fs-plus": "0.10.0",
+    "github-releases": "0.1.x",
+    "glob": "3.x",
+    "jade": "~0.35.0",
+    "minidump": "0.3.0",
     "mkdirp": "~0.3.5",
     "node-uuid": "~1.4.1",
-    "dirty": "0.9.7",
-    "minidump": "0.3.0",
-    "fs-plus": "0.10.0"
+    "temp": "0.7.0",
+    "wrench": "1.5.x"
   },
   "devDependencies": {
+    "coffee-script": "~1.6.2",
     "grunt": "~0.4.1",
     "grunt-contrib-coffee": "~0.6.6",
     "grunt-coffeelint": "~0.0.6",
     "grunt-cli": "~0.1.7",
     "grunt-shell": "~0.2.2",
-    "rimraf": "~2.1.4",
-    "coffee-script": "~1.6.2"
+    "rimraf": "~2.1.4"
   },
   "licenses": [
     {

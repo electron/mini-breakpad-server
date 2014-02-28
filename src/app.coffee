@@ -3,13 +3,16 @@ express = require 'express'
 reader = require './reader'
 saver = require './saver'
 Database = require './database'
+WebHook = require './webhook'
 
 app = express()
+webhook = new WebHook
 
 db = new Database
 db.on 'load', ->
-  app.listen 1127
-  console.log 'Listening on port 1127'
+  port = process.env.MINI_BREAKPAD_SERVER_PORT ? 1127
+  app.listen port
+  console.log "Listening on port #{port}"
 
 app.set 'views', path.resolve(__dirname, '..', 'views')
 app.set 'view engine', 'jade'
@@ -19,6 +22,10 @@ app.use express.methodOverride()
 app.use app.router
 app.use (err, req, res, next) ->
   res.send 500, "Bad things happened:<br/> #{err.message}"
+
+app.post '/webhook', (req, res, next) ->
+  webhook.onRequest req
+  res.end()
 
 app.post '/post', (req, res, next) ->
   saver.saveRequest req, db, (err, filename) ->
