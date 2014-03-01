@@ -36,10 +36,12 @@ app.post '/post', (req, res, next) ->
     console.log 'saved', filename
     res.end()
 
-app.get '/', (req, res, next) ->
+root = process.env.MINI_BREAKPAD_SERVER_ROOT ? ''
+
+app.get "/#{root}", (req, res, next) ->
   res.render 'index', title: 'Crash Reports', records: db.getAllRecords()
 
-app.get '/view/:id', (req, res, next) ->
+app.get "/#{root}/view/:id", (req, res, next) ->
   db.restoreRecord req.params.id, (err, record) ->
     return next err if err?
 
