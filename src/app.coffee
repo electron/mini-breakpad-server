@@ -1,18 +1,10 @@
 path = require 'path'
 express = require 'express'
-reader = require './reader'
-saver = require './saver'
-Database = require './database'
 WebHook = require './webhook'
+Record = require './record'
 
 app = express()
 webhook = new WebHook
-
-db = new Database
-db.on 'load', ->
-  port = process.env.MINI_BREAKPAD_SERVER_PORT ? 1127
-  app.listen port
-  console.log "Listening on port #{port}"
 
 app.set 'views', path.resolve(__dirname, '..', 'views')
 app.set 'view engine', 'jade'
@@ -30,11 +22,9 @@ app.post '/webhook', (req, res, next) ->
   res.end()
 
 app.post '/post', (req, res, next) ->
-  saver.saveRequest req, db, (err, filename) ->
+  Record.createFromRequest req, (err, record) ->
     return next err if err?
-
-    console.log 'saved', filename
-    res.send path.basename(filename)
+    res.json record
     res.end()
 
 root =
@@ -44,13 +34,16 @@ root =
     ''
 
 app.get "/#{root}", (req, res, next) ->
-  res.render 'index', title: 'Crash Reports', records: db.getAllRecords()
+  Record.findAll().then (records) ->
+    res.render 'index', title: 'Crash Reports', records: records
 
 app.get "/#{root}view/:id", (req, res, next) ->
-  db.restoreRecord req.params.id, (err, record) ->
-    return next err if err?
+  Record.findById(req.params.id).then (record) ->
+    if not record?
+      return res.send 404, 'Crash report not found'
+    Record.getStackTrace record, (err, report) ->
+      res.render 'view', { title: 'Crash Report', report: report, fields: record.toJSON() }
 
-    reader.getStackTraceFromRecord record, (err, report) ->
-      return next err if err?
-      fields = record.fields
-      res.render 'view', {title: 'Crash Report', report, fields}
+port = process.env.MINI_BREAKPAD_SERVER_PORT ? 1127
+app.listen port
+console.log "Listening on port #{port}"

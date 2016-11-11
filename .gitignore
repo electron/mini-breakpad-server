@@ -3,3 +3,4 @@
 /pool
 *.swp
 *.log
+*.sqlite

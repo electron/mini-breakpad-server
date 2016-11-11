@@ -1,51 +1,61 @@
 path = require 'path'
 formidable = require 'formidable'
-uuid = require 'node-uuid'
+mkdirp = require 'mkdirp'
+fs = require 'fs-extra'
+cache = require './cache'
+minidump = require 'minidump'
+Sequelize = require 'sequelize'
 
-class Record
-  id: null
-  time: null
-  path: null
-  product: null
-  version: null
-  fields: null
+DIST_DIR = 'pool/files/minidump'
 
-  constructor: ({@id, @time, @path, @sender, @product, @version, @fields}) ->
-    @id ?= uuid.v4()
-    @time ?= new Date
+sequelize = new Sequelize('database', 'username', 'password', {
+  host: 'localhost'
+  dialect: 'sqlite'
+  storage: 'database.sqlite'
+})
 
-  # Public: Parse web request to get the record.
-  @createFromRequest: (req, callback) ->
-    form = new formidable.IncomingForm()
-    form.parse req, (error, fields, files) ->
-      unless files.upload_file_minidump?.name?
-        return callback new Error('Invalid breakpad upload')
+Record = sequelize.define('record', {
+  id:
+    type: Sequelize.INTEGER
+    autoIncrement: yes
+    primaryKey: yes
+  path: Sequelize.STRING
+  product: Sequelize.STRING
+  version: Sequelize.STRING
+})
 
-      record = new Record
-        path: files.upload_file_minidump.path
-        sender: {ua: req.headers['user-agent'], ip: Record.getIpAddress(req)}
-        product: fields.prod
-        version: fields.ver
-        fields: fields
-      callback(null, record)
+Record.sync
 
-  # Public: Restore a Record from raw representation.
-  @unserialize: (id, representation) ->
-    new Record
-      id: id
-      time: new Date(representation.time)
-      path: representation.path
-      sender: representation.sender
-      product: representation.fields.prod
-      version: representation.fields.ver
-      fields: representation.fields
+Record.getStackTrace = (record, callback) ->
+  return callback(null, cache.get(record.id)) if cache.has record.id
 
-  # Private: Gets the IP address from request.
-  @getIpAddress: (req) ->
-    req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  symbolPaths = [ path.join 'pool', 'symbols' ]
+  minidump.walkStack record.path, symbolPaths, (err, report) ->
+    cache.set record.id, report unless err?
+    callback err, report
 
-  # Public: Returns the representation to be stored in database.
-  serialize: ->
-    time: @time.getTime(), path: @path, sender: @sender, fields: @fields
+Record.createFromRequest = (req, callback) ->
+  form = new formidable.IncomingForm()
+  form.parse req, (error, fields, files) ->
+    unless files.upload_file_minidump?.name?
+      return callback new Error('Invalid breakpad upload')
+
+    mkdirp DIST_DIR, (err) ->
+      return callback new Error("Cannot create directory: #{dist}") if err?
+
+      sequelize.transaction (t) ->
+        props = product: fields.prod, version: fields.ver
+
+        Record.create(props, { transaction: t })
+          .then (record) ->
+            id = record.get('id').toString()
+            filename = path.join DIST_DIR, id
+            fs.copySync(files.upload_file_minidump.path, filename)
+            record.update({ path: filename }, { transaction: t })
+              .then (savedRecord) ->
+                callback(null, savedRecord)
+
+      .catch (err) ->
+        callback err
 
 module.exports = Record
