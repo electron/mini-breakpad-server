@@ -17,6 +17,9 @@ breakpad.use methodOverride()
 breakpad.use (err, req, res, next) ->
   res.send 500, "Bad things happened:<br/> #{err.message}"
 
+# serve minidumps as files
+breakpad.use '/minidumps', express.static('pool/files/minidump')
+
 breakpad.post '/webhook', (req, res, next) ->
   webhook.onRequest req
 
