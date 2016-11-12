@@ -1,7 +1,10 @@
 Sequelize = require 'sequelize'
 sequelize = require './db'
+formidable = require 'formidable'
 
-Symbols = sequelize.define('symbols', {
+DIST_DIR = 'pool/symbols'
+
+Symfile = sequelize.define('symfiles', {
   id:
     type: Sequelize.INTEGER
     autoIncrement: yes
@@ -12,9 +15,12 @@ Symbols = sequelize.define('symbols', {
   filename: Sequelize.STRING
 })
 
-Symbols.sync()
+Symfile.sync()
 
-Symbols.createFromRequest = (req, callback) ->
+Symfile.createFromRequest = (req, callback) ->
   console.log('todo')
 
-model.exports = Symbols
+Symfile.saveToDisk = (symfile, callback) ->
+  console.log('todo')
+
+model.exports = Symfile
