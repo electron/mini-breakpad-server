@@ -10,7 +10,7 @@ breakpad = express()
 webhook = new WebHook
 
 breakpad.set 'views', path.resolve(__dirname, '..', 'views')
-breakpad.set 'view engine', 'jade'
+breakpad.set 'view engine', 'pug'
 breakpad.use bodyParser.json()
 breakpad.use bodyParser.urlencoded({extended: true})
 breakpad.use methodOverride()
