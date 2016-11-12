@@ -48,5 +48,6 @@
   },
   "bugs": {
     "url": "https://github.com/atom/mini-breakpad-server/issues"
-  }
+  },
+  "license": "MIT"
 }
