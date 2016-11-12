@@ -33,7 +33,7 @@ breakpad.get '/', (req, res, next) ->
   res.redirect '/crashreports'
 
 breakpad.get '/crashreports', (req, res, next) ->
-  Record.findAll().then (records) ->
+  Record.findAll(order: 'createdAt DESC').then (records) ->
     res.render 'index', title: 'Crash Reports', records: records
 
 breakpad.get '/crashreports/:id', (req, res, next) ->
