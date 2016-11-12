@@ -5,14 +5,9 @@ fs = require 'fs-extra'
 cache = require './cache'
 minidump = require 'minidump'
 Sequelize = require 'sequelize'
+sequelize = require './db'
 
 DIST_DIR = 'pool/files/minidump'
-
-sequelize = new Sequelize('database', 'username', 'password', {
-  host: 'localhost'
-  dialect: 'sqlite'
-  storage: 'database.sqlite'
-})
 
 Record = sequelize.define('record', {
   id:

@@ -3,7 +3,7 @@ methodOverride = require('method-override')
 path = require 'path'
 express = require 'express'
 WebHook = require './webhook'
-Record = require './record'
+Record = require './model/record'
 
 app = express()
 breakpad = express()
