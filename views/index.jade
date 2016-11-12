@@ -5,5 +5,5 @@ block content
   ol
     each record in records
       li
-        a(href='view/' + record.id)
+        a(href='crashreports/' + record.id)
           = 'v' + record.version + ' ' + record.createdAt.toLocaleString()

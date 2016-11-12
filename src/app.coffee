@@ -23,17 +23,20 @@ breakpad.post '/webhook', (req, res, next) ->
   console.log 'webhook requested', req.body.repository.full_name
   res.end()
 
-breakpad.post '/post', (req, res, next) ->
+breakpad.post '/crashreports', (req, res, next) ->
   Record.createFromRequest req, (err, record) ->
     return next err if err?
     res.json record
     res.end()
 
 breakpad.get '/', (req, res, next) ->
+  res.redirect '/crashreports'
+
+breakpad.get '/crashreports', (req, res, next) ->
   Record.findAll().then (records) ->
     res.render 'index', title: 'Crash Reports', records: records
 
-breakpad.get '/view/:id', (req, res, next) ->
+breakpad.get '/crashreports/:id', (req, res, next) ->
   Record.findById(req.params.id).then (record) ->
     if not record?
       return res.send 404, 'Crash report not found'
