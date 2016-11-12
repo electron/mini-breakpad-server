@@ -18,7 +18,7 @@
     "github-releases": "0.1.x",
     "glob": "3.x",
     "jade": "~0.35.0",
-    "minidump": "0.3.0",
+    "minidump": "0.10.0",
     "mkdirp": "~0.3.5",
     "node-uuid": "~1.4.1",
     "sequelize": "^3.25.0",
