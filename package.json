@@ -15,6 +15,7 @@
     "formidable": "^1.0.17",
     "fs-extra": "^1.0.0",
     "fs-plus": "^2.9.3",
+    "fs-promise": "^1.0.0",
     "github-releases": "^0.3.2",
     "glob": "^7.1.1",
     "method-override": "^2.3.6",
@@ -34,6 +35,8 @@
     "grunt-coffeelint": "^0.0.16",
     "grunt-cli": "^1.2.0",
     "grunt-shell": "^2.1.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-express-server": "^0.5.3",
     "rimraf": "^2.5.4"
   },
   "licenses": [

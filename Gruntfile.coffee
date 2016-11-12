@@ -17,6 +17,22 @@ module.exports = (grunt) ->
 
       src: ['src/**/*.coffee']
 
+    watch:
+      express:
+        files: ['**/*.coffee']
+        tasks: ['express:dev']
+        options:
+          spawn: no
+
+    express:
+      dev:
+        options:
+          opts: ['node_modules/coffee-script/bin/coffee']
+          cmd: process.argv[0]
+          script: 'src/app.coffee'
+
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-express-server')
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-shell')
   grunt.loadNpmTasks('grunt-coffeelint')
@@ -25,3 +41,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'clean', ->
     rm = require('rimraf').sync
     rm('lib')
+  grunt.registerTask('serve', ['express', 'watch'])
