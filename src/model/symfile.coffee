@@ -4,22 +4,34 @@ formidable = require 'formidable'
 fs = require 'fs-promise'
 
 DIST_DIR = 'pool/symbols'
+COMPOSITE_INDEX = 'compositeIndex'
 
 Symfile = sequelize.define('symfiles', {
   id:
     type: Sequelize.INTEGER
     autoIncrement: yes
     primaryKey: yes
-  os: Sequelize.STRING
-  code: Sequelize.STRING
-  arch: Sequelize.STRING
+  os:
+    type: Sequelize.STRING
+    unique: COMPOSITE_INDEX
+  name:
+    type: Sequelize.STRING
+    unique: COMPOSITE_INDEX
+  code:
+    type: Sequelize.STRING
+    unique: COMPOSITE_INDEX
+  arch:
+    type: Sequelize.STRING
+    unique: COMPOSITE_INDEX
   contents: Sequelize.TEXT
 })
 
-Symfile.sync(force: yes)
+Symfile.sync()
 
-Symfile.saveToDisk = (symfile, callback) ->
-  console.log('todo')
+Symfile.saveToDisk = (symfile) ->
+  symfileDir = "#{DIST_DIR}/#{symfile.name}/#{symfile.code}"
+  fs.mkdirs(symfileDir).then ->
+    fs.writeFile("#{symfileDir}/#{symfile.name}.sym", symfile.contents)
 
 Symfile.createFromRequest = (req, callback) ->
   form = new formidable.IncomingForm()
@@ -36,9 +48,27 @@ Symfile.createFromRequest = (req, callback) ->
         if dec != 'MODULE'
           throw new Error 'Could not parse header (expecting MODULE as first line)'
 
-        Symfile.create({ os: os, arch: arch, code: code, name: name , contents: contents})
-          .then (symfile) ->
-            callback(null, symfile)
+        props =
+          os: os
+          arch: arch
+          code: code
+          name: name
+          contents: contents
+
+        sequelize.transaction (t) ->
+          whereDuplicated =
+            where: { os: os, arch: arch, code: code, name: name}
+
+          Symfile.findOne(whereDuplicated, {transaction: t}).then (duplicate) ->
+            p =
+              if duplicate?
+                duplicate.destroy({transaction: t})
+              else
+                Promise.resolve()
+            p.then ->
+              Symfile.create(props, {transaction: t}).then (symfile) ->
+                Symfile.saveToDisk(symfile).then ->
+                  callback(null, symfile)
 
       .catch (err) ->
         callback err
