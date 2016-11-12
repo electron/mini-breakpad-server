@@ -19,7 +19,7 @@ Record = sequelize.define('record', {
   version: Sequelize.STRING
 })
 
-Record.sync
+Record.sync()
 
 Record.getStackTrace = (record, callback) ->
   return callback(null, cache.get(record.id)) if cache.has record.id
