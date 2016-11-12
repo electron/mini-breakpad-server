@@ -14,8 +14,12 @@ breakpad.set 'view engine', 'jade'
 breakpad.use bodyParser.json()
 breakpad.use bodyParser.urlencoded({extended: true})
 breakpad.use methodOverride()
+
 breakpad.use (err, req, res, next) ->
-  res.send 500, "Bad things happened:<br/> #{err.message}"
+  if not err.message?
+    console.log 'warning: error thrown without a message'
+
+  res.send 500, "Bad things happened:<br/> #{err.message || err}"
 
 # serve minidumps as files
 breakpad.use '/minidumps', express.static('pool/files/minidump')
