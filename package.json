@@ -9,9 +9,10 @@
     "prepublish": "grunt coffee"
   },
   "dependencies": {
+    "body-parser": "^1.14.0",
     "decompress-zip": "0.0.4",
     "dirty": "0.9.7",
-    "express": "3.x",
+    "express": "^4.13.3",
     "formidable": "~1.0.14",
     "fs-extra": "^1.0.0",
     "fs-plus": "0.10.0",
@@ -19,6 +20,7 @@
     "glob": "3.x",
     "jade": "~0.35.0",
     "minidump": "0.10.0",
+    "method-override": "^2.3.5",
     "mkdirp": "~0.3.5",
     "node-uuid": "~1.4.1",
     "sequelize": "^3.25.0",
