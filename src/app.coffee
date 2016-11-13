@@ -4,7 +4,7 @@ path = require 'path'
 express = require 'express'
 exphbs = require 'express-handlebars'
 WebHook = require './webhook'
-Record = require './model/record'
+Crashreport = require './model/crashreport'
 Symfile = require './model/symfile'
 
 # initialization: write all symfiles to disk
@@ -53,7 +53,7 @@ run = ->
     res.end()
 
   breakpad.post '/crashreports', (req, res, next) ->
-    Record.createFromRequest req, (err, record) ->
+    Crashreport.createFromRequest req, (err, record) ->
       return next err if err?
       res.json record
 
@@ -61,14 +61,14 @@ run = ->
     res.redirect '/crashreports'
 
   breakpad.get '/crashreports', (req, res, next) ->
-    Record.findAll(order: 'createdAt DESC').then (records) ->
+    Crashreport.findAll(order: 'createdAt DESC').then (records) ->
       res.render 'index', title: 'Crash Reports', records: records
 
   breakpad.get '/crashreports/:id', (req, res, next) ->
-    Record.findById(req.params.id).then (record) ->
+    Crashreport.findById(req.params.id).then (record) ->
       if not record?
         return res.send 404, 'Crash report not found'
-      Record.getStackTrace record, (err, report) ->
+      Crashreport.getStackTrace record, (err, report) ->
         res.render 'view', { title: 'Crash Report', report: report, fields: record.toJSON() }
 
   breakpad.post '/symfiles', (req, res, next) ->

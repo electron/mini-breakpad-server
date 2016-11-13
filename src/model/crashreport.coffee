@@ -9,7 +9,7 @@ sequelize = require './db'
 
 DIST_DIR = 'pool/files/minidump'
 
-Record = sequelize.define('record', {
+Crashreport = sequelize.define('record', {
   id:
     type: Sequelize.INTEGER
     autoIncrement: yes
@@ -19,9 +19,9 @@ Record = sequelize.define('record', {
   version: Sequelize.STRING
 })
 
-Record.sync()
+Crashreport.sync()
 
-Record.getStackTrace = (record, callback) ->
+Crashreport.getStackTrace = (record, callback) ->
   return callback(null, cache.get(record.id)) if cache.has record.id
 
   symbolPaths = [ path.join 'pool', 'symbols' ]
@@ -29,7 +29,7 @@ Record.getStackTrace = (record, callback) ->
     cache.set record.id, report unless err?
     callback err, report
 
-Record.createFromRequest = (req, callback) ->
+Crashreport.createFromRequest = (req, callback) ->
   form = new formidable.IncomingForm()
   form.parse req, (error, fields, files) ->
     unless files.upload_file_minidump?.name?
@@ -41,16 +41,16 @@ Record.createFromRequest = (req, callback) ->
       sequelize.transaction (t) ->
         props = product: fields.prod, version: fields.ver
 
-        Record.create(props, { transaction: t })
+        Crashreport.create(props, { transaction: t })
           .then (record) ->
             id = record.get('id').toString()
             filename = path.join DIST_DIR, id
             fs.copySync(files.upload_file_minidump.path, filename)
             record.update({ path: filename }, { transaction: t })
-              .then (savedRecord) ->
-                callback(null, savedRecord)
+              .then (savedCrashreport) ->
+                callback(null, savedCrashreport)
 
       .catch (err) ->
         callback err
 
-module.exports = Record
+module.exports = Crashreport
