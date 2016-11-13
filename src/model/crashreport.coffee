@@ -1,15 +1,19 @@
 path = require 'path'
 formidable = require 'formidable'
 mkdirp = require 'mkdirp'
-fs = require 'fs-extra'
+fs = require 'fs-promise'
 cache = require './cache'
 minidump = require 'minidump'
 Sequelize = require 'sequelize'
 sequelize = require './db'
+nconf = require 'nconf'
 
 DIST_DIR = 'pool/files/minidump'
 
-Crashreport = sequelize.define('record', {
+# custom fields should have 'files' and 'params'
+customFields = nconf.get('customFields') || {}
+
+schema =
   id:
     type: Sequelize.INTEGER
     autoIncrement: yes
@@ -17,7 +21,14 @@ Crashreport = sequelize.define('record', {
   path: Sequelize.STRING
   product: Sequelize.STRING
   version: Sequelize.STRING
-})
+
+for field in (customFields.params || [])
+  schema[field] = Sequelize.STRING
+
+for field in (customFields.files || [])
+  schema[field] = Sequelize.BLOB
+
+Crashreport = sequelize.define('crashreports', schema)
 
 Crashreport.sync()
 
@@ -41,14 +52,28 @@ Crashreport.createFromRequest = (req, callback) ->
       sequelize.transaction (t) ->
         props = product: fields.prod, version: fields.ver
 
-        Crashreport.create(props, { transaction: t })
-          .then (record) ->
-            id = record.get('id').toString()
-            filename = path.join DIST_DIR, id
-            fs.copySync(files.upload_file_minidump.path, filename)
-            record.update({ path: filename }, { transaction: t })
-              .then (savedCrashreport) ->
-                callback(null, savedCrashreport)
+        for param in customFields.params
+          if param of fields
+            props[param] = fields[param]
+
+        fileOps = []
+
+        for fileParam in customFields.files
+          if fileParam of files
+            p = fs.readFile(files[fileParam].path).then (contents) ->
+              props[fileParam] = contents
+
+            fileOps.push(p)
+
+        Promise.all(fileOps).then ->
+          Crashreport.create(props, { transaction: t })
+            .then (record) ->
+              id = record.get('id').toString()
+              filename = path.join DIST_DIR, id
+              fs.copySync(files.upload_file_minidump.path, filename)
+              record.update({ path: filename }, { transaction: t })
+                .then (savedCrashreport) ->
+                  callback(null, savedCrashreport)
 
       .catch (err) ->
         callback err

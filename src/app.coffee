@@ -9,6 +9,9 @@ nconf.defaults
     dialect: 'sqlite'
     storage: 'database.sqlite'
     logging: no
+  customFields:
+    files: []
+    params: []
 
 nconf.file 'user', {
   file: './breakpad-server.yaml', format: nconf.formats.yaml
