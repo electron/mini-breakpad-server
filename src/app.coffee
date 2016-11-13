@@ -1,6 +1,15 @@
 nconf = require 'nconf'
 nconf.formats.yaml = require 'nconf-yaml'
 
+console.log process.cwd()
+
+nconf.file 'user', {
+  file: "#{process.cwd()}/breakpad-server.yaml", format: nconf.formats.yaml
+}
+nconf.file 'system', {
+  file: '/etc/breakpad-server.yaml', format: nconf.formats.yaml
+}
+
 nconf.defaults
   port: process.env.BREAKPAD_PORT || 1127
   baseUrl: process.env.BASEURL || '/'
@@ -12,13 +21,6 @@ nconf.defaults
   customFields:
     files: []
     params: []
-
-nconf.file 'user', {
-  file: './breakpad-server.yaml', format: nconf.formats.yaml
-}
-nconf.file 'system', {
-  file: '/etc/breakpad-server.yaml', format: nconf.formats.yaml
-}
 
 bodyParser = require 'body-parser'
 methodOverride = require('method-override')
