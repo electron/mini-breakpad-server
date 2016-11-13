@@ -1,0 +1,11 @@
+<h1>Crash Reports</h1>
+
+<ol>
+    {{#each records}}
+    <li>
+        <a href="/crashreports/{{this.id}}">
+            v{{this.version}} {{this.createdAt}}
+        </a>
+    </li>
+    {{/each}}
+</ol>

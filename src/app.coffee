@@ -2,6 +2,7 @@ bodyParser = require 'body-parser'
 methodOverride = require('method-override')
 path = require 'path'
 express = require 'express'
+exphbs = require 'express-handlebars'
 WebHook = require './webhook'
 Record = require './model/record'
 Symfile = require './model/symfile'
@@ -19,7 +20,8 @@ run = ->
   webhook = new WebHook
 
   breakpad.set 'views', path.resolve(__dirname, '..', 'views')
-  breakpad.set 'view engine', 'pug'
+  breakpad.engine('handlebars', exphbs({defaultLayout: 'main'}))
+  breakpad.set 'view engine', 'handlebars'
   breakpad.use bodyParser.json()
   breakpad.use bodyParser.urlencoded({extended: true})
   breakpad.use methodOverride()

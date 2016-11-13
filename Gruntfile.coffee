@@ -19,7 +19,7 @@ module.exports = (grunt) ->
 
     watch:
       express:
-        files: ['**/*.coffee']
+        files: ['**/*.coffee', '**/*.handlebars']
         tasks: ['express:dev']
         options:
           spawn: no

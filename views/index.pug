@@ -1,9 +1,0 @@
-extends layout
-
-block content
-  h1= title
-  ol
-    each record in records
-      li
-        a(href='crashreports/' + record.id)
-          = 'v' + record.version + ' ' + record.createdAt.toLocaleString()
