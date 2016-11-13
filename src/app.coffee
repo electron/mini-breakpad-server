@@ -88,6 +88,19 @@ run = ->
       Crashreport.getStackTrace record, (err, report) ->
         res.render 'view', { title: 'Crash Report', report: report, fields: record.toJSON() }
 
+  breakpad.get '/crashreports/:id/:filefield', (req, res, next) ->
+    # download the file for the given id
+    Crashreport.findById(req.params.id).then (crashreport) ->
+      if not crashreport?
+        return res.status(404).send 'Crash report not found'
+
+      contents = crashreport.get(req.params.filefield)
+
+      if not Buffer.isBuffer(contents)
+        return res.status(404).send 'Crash report field is not a file'
+
+      res.send(contents)
+
   breakpad.post '/symfiles', (req, res, next) ->
     Symfile.createFromRequest req, (err, symfile) ->
       return next(err) if err?
