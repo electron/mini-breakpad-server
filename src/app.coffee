@@ -1,3 +1,17 @@
+nconf = require 'nconf'
+nconf.formats.yaml = require 'nconf-yaml'
+
+nconf.defaults
+  port: process.env.BREAKPAD_PORT || 1127
+  baseUrl: process.env.BASEURL || '/'
+
+nconf.file 'user', {
+  file: './breakpad-server.yaml', format: nconf.formats.yaml
+}
+nconf.file 'system', {
+  file: '/etc/breakpad-server.yaml', format: nconf.formats.yaml
+}
+
 bodyParser = require 'body-parser'
 methodOverride = require('method-override')
 path = require 'path'
@@ -26,15 +40,10 @@ run = ->
   breakpad.use bodyParser.urlencoded({extended: true})
   breakpad.use methodOverride()
 
-  port = process.env.MINI_BREAKPAD_SERVER_PORT ? 1127
+  baseUrl = nconf.get('baseUrl')
+  port = nconf.get('port')
 
-  root =
-    if process.env.MINI_BREAKPAD_SERVER_ROOT?
-      "#{process.env.MINI_BREAKPAD_SERVER_ROOT}/"
-    else
-      '/'
-
-  app.use root, breakpad
+  app.use baseUrl, breakpad
 
   # serve minidumps as files
   breakpad.use '/minidumps', express.static('pool/files/minidump')
