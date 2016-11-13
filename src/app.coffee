@@ -74,7 +74,14 @@ run = ->
   breakpad.post '/crashreports', (req, res, next) ->
     Crashreport.createFromRequest req, (err, record) ->
       return next err if err?
-      res.json record
+
+      crashreportJson = record.toJSON()
+
+      for k,v of crashreportJson
+        if Buffer.isBuffer(crashreportJson[k])
+          crashreportJson[k] = "/crashreports/#{crashreportJson.id}/#{k}"
+
+      res.json crashreportJson
 
   breakpad.get '/', (req, res, next) ->
     res.redirect '/crashreports'
