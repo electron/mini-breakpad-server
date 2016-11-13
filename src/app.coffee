@@ -4,6 +4,11 @@ nconf.formats.yaml = require 'nconf-yaml'
 nconf.defaults
   port: process.env.BREAKPAD_PORT || 1127
   baseUrl: process.env.BASEURL || '/'
+  database:
+    host: 'localhost'
+    dialect: 'sqlite'
+    storage: 'database.sqlite'
+    logging: no
 
 nconf.file 'user', {
   file: './breakpad-server.yaml', format: nconf.formats.yaml
