@@ -7,6 +7,7 @@ minidump = require 'minidump'
 Sequelize = require 'sequelize'
 sequelize = require './db'
 nconf = require 'nconf'
+tmp = require 'tmp'
 
 DIST_DIR = 'pool/files/minidump'
 
@@ -18,9 +19,9 @@ schema =
     type: Sequelize.INTEGER
     autoIncrement: yes
     primaryKey: yes
-  path: Sequelize.STRING
   product: Sequelize.STRING
   version: Sequelize.STRING
+  upload_file_minidump: Sequelize.BLOB
 
 for field in (customFields.params || [])
   schema[field] = Sequelize.STRING
@@ -36,9 +37,16 @@ Crashreport.getStackTrace = (record, callback) ->
   return callback(null, cache.get(record.id)) if cache.has record.id
 
   symbolPaths = [ path.join 'pool', 'symbols' ]
-  minidump.walkStack record.path, symbolPaths, (err, report) ->
-    cache.set record.id, report unless err?
-    callback err, report
+
+  tmpfile = tmp.fileSync()
+  fs.writeFile(tmpfile.name, record.upload_file_minidump).then ->
+    minidump.walkStack tmpfile.name, symbolPaths, (err, report) ->
+      tmpfile.removeCallback()
+      cache.set record.id, report unless err?
+      callback err, report
+  .catch (err) ->
+    tmpfile.removeCallback()
+    callback err
 
 Crashreport.createFromRequest = (req, callback) ->
   form = new formidable.IncomingForm()
@@ -46,36 +54,26 @@ Crashreport.createFromRequest = (req, callback) ->
     unless files.upload_file_minidump?.name?
       return callback new Error('Invalid breakpad upload')
 
-    mkdirp DIST_DIR, (err) ->
-      return callback new Error("Cannot create directory: #{dist}") if err?
+    props = product: fields.prod, version: fields.ver
 
-      sequelize.transaction (t) ->
-        props = product: fields.prod, version: fields.ver
+    for param in customFields.params
+      if param of fields
+        props[param] = fields[param]
 
-        for param in customFields.params
-          if param of fields
-            props[param] = fields[param]
+    fileOps = []
+    fileParams = customFields.files.concat(['upload_file_minidump'])
 
-        fileOps = []
+    for fileParam in fileParams
+      if fileParam of files
+        p = fs.readFile(files[fileParam].path).then (contents) ->
+          props[fileParam] = contents
 
-        for fileParam in customFields.files
-          if fileParam of files
-            p = fs.readFile(files[fileParam].path).then (contents) ->
-              props[fileParam] = contents
+        fileOps.push(p)
 
-            fileOps.push(p)
-
-        Promise.all(fileOps).then ->
-          Crashreport.create(props, { transaction: t })
-            .then (record) ->
-              id = record.get('id').toString()
-              filename = path.join DIST_DIR, id
-              fs.copySync(files.upload_file_minidump.path, filename)
-              record.update({ path: filename }, { transaction: t })
-                .then (savedCrashreport) ->
-                  callback(null, savedCrashreport)
-
-      .catch (err) ->
-        callback err
+    Promise.all(fileOps).then( ->
+      Crashreport.create(props).then (crashreport) ->
+        callback(null, crashreport)
+    ).catch (err) ->
+      callback err
 
 module.exports = Crashreport

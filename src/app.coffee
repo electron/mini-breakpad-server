@@ -31,6 +31,15 @@ WebHook = require './webhook'
 Crashreport = require './model/crashreport'
 Symfile = require './model/symfile'
 
+crashreportToJson = (crashreport) ->
+  json = crashreport.toJSON()
+
+  for k,v of json
+    if Buffer.isBuffer(json[k])
+      json[k] = "/crashreports/#{json.id}/#{k}"
+
+  json
+
 # initialization: write all symfiles to disk
 Symfile.findAll()
   .then (symfiles) ->
@@ -74,14 +83,7 @@ run = ->
   breakpad.post '/crashreports', (req, res, next) ->
     Crashreport.createFromRequest req, (err, record) ->
       return next err if err?
-
-      crashreportJson = record.toJSON()
-
-      for k,v of crashreportJson
-        if Buffer.isBuffer(crashreportJson[k])
-          crashreportJson[k] = "/crashreports/#{crashreportJson.id}/#{k}"
-
-      res.json crashreportJson
+      res.json crashreportToJson(record)
 
   breakpad.get '/', (req, res, next) ->
     res.redirect '/crashreports'
@@ -95,7 +97,12 @@ run = ->
       if not record?
         return res.send 404, 'Crash report not found'
       Crashreport.getStackTrace record, (err, report) ->
-        res.render 'view', { title: 'Crash Report', report: report, fields: record.toJSON() }
+        return next err if err?
+        res.render 'view', {
+          title: 'Crash Report'
+          report: report
+          fields: crashreportToJson(record)
+        }
 
   breakpad.get '/crashreports/:id/:filefield', (req, res, next) ->
     # download the file for the given id
