@@ -11,10 +11,10 @@
     "start": "node lib/app.js"
   },
   "dependencies": {
-    "body-parser": "^1.14.0",
+    "body-parser": "^1.16.1",
     "decompress-zip": "0.0.4",
     "dirty": "0.9.7",
-    "express": "^4.13.3",
+    "express": "^4.14.1",
     "formidable": "~1.0.14",
     "fs-plus": "0.10.0",
     "github-releases": "0.1.x",
