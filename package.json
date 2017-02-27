@@ -15,6 +15,7 @@
     "decompress-zip": "0.0.4",
     "dirty": "0.9.7",
     "express": "^4.14.1",
+    "express-json": "^1.0.0",
     "formidable": "~1.0.14",
     "fs-plus": "0.10.0",
     "github-releases": "0.1.x",
