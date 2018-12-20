@@ -1,5 +1,3 @@
-bodyParser = require 'body-parser'
-methodOverride = require('method-override')
 path = require 'path'
 express = require 'express'
 reader = require './reader'
@@ -18,9 +16,10 @@ db.on 'load', ->
 
 app.set 'views', path.resolve(__dirname, '..', 'views')
 app.set 'view engine', 'jade'
-app.use bodyParser.json()
-app.use bodyParser.urlencoded({extended: true})
-app.use methodOverride()
+app.use express.json()
+app.use express.urlencoded()
+app.use express.methodOverride()
+app.use app.router
 app.use (err, req, res, next) ->
   res.send 500, "Bad things happened:<br/> #{err.message}"
 
