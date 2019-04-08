@@ -16,3 +16,8 @@ Minimum collecting server for crash reports sent by
 * `grunt`
 * Put your breakpad symbols under `pool/symbols/PRODUCT_NAME`
 * `node lib/app.js`
+
+## Building with Docker
+```
+docker build -t premiereglobal/mini-breakpad-server:dev .
+```

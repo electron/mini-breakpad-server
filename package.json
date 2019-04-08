@@ -6,37 +6,36 @@
     "mini-breakpad-server": "bin/mini-breakpad-server"
   },
   "scripts": {
-    "prepublish": "grunt coffee",
+    "prepare": "grunt coffee",
     "postinstall": "grunt",
     "start": "node lib/app.js"
   },
   "dependencies": {
     "body-parser": "^1.16.1",
     "decompress-zip": "0.0.4",
-    "dirty": "0.9.7",
-    "express": "^4.14.1",
+    "dirty": "1.1.0",
+    "express": "^4.0.0",
     "express-json": "^1.0.0",
-    "formidable": "~1.0.14",
-    "fs-plus": "0.10.0",
-    "github-releases": "0.1.x",
-    "glob": "3.x",
-    "grunt": "^0.4.5",
-    "jade": "~0.35.0",
-    "method-override": "^2.3.5",
-    "minidump": "0.3.0",
+    "formidable": "^1.0.0",
+    "fs-plus": "^3.0.0",
+    "github-releases": "0.4.2",
+    "glob": "^7.0.0",
+    "method-override": "^3.0.0",
+    "minidump": "0.15.0",
     "mkdirp": "~0.3.5",
-    "node-uuid": "~1.4.1",
+    "pug": "^2.0.0",
+    "uuid": "^3.0.0",
     "temp": "0.7.0",
     "wrench": "1.5.x"
   },
   "devDependencies": {
-    "coffee-script": "~1.6.2",
-    "grunt": "~0.4.1",
-    "grunt-contrib-coffee": "~0.6.6",
-    "grunt-coffeelint": "~0.0.6",
-    "grunt-cli": "~0.1.7",
-    "grunt-shell": "~0.2.2",
-    "rimraf": "~2.1.4"
+    "coffeescript": "^2.0.0",
+    "grunt": "^1.0.0",
+    "grunt-contrib-coffee": "^2.1.0",
+    "grunt-coffeelint": "^0.0.16",
+    "grunt-cli": "^1.0.0",
+    "grunt-shell": "^3.0.0",
+    "rimraf": "^2.0.0"
   },
   "licenses": [
     {
