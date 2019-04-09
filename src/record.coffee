@@ -1,6 +1,6 @@
 path = require 'path'
 formidable = require 'formidable'
-uuid = require 'node-uuid'
+uuid = require 'uuid'
 
 class Record
   id: null

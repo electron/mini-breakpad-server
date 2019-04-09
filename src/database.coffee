@@ -9,6 +9,7 @@ class Database extends EventEmitter
 
   # Public: Create or open a Database with path to {filename}
   constructor: (filename=path.join('pool', 'database', 'dirty', 'db')) ->
+    super()
     dist = path.resolve filename, '..'
     mkdirp dist, (err) =>
       throw new Error("Cannot create directory: #{dist}") if err?
