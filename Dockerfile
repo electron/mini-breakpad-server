@@ -12,9 +12,9 @@ RUN curl -L -o win32.zip https://github.com/electron/electron/releases/download/
 
 RUN npm install -g grunt
 
-ADD src /app
+ADD src /app/src
 ADD package.json /app
-ADD views /app
+ADD views /app/views
 ADD Gruntfile.coffee /app
 
 WORKDIR /app
@@ -24,4 +24,3 @@ RUN npm install .
 RUN grunt
 
 CMD node lib/app.js
-
