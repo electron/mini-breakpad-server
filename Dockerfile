@@ -23,5 +23,5 @@ RUN npm install .
 
 RUN grunt
 
-#CMD node lib/app.js
+CMD node lib/app.js
 
