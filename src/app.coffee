@@ -39,7 +39,6 @@ app.post '/post', (req, res, next) ->
       res.send path.basename(filename)
       res.end()
   else
-    console.log "Token received: #{req.query.token}"
     res.status(403).send("Invalid token")
     return
 

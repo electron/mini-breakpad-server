@@ -14,7 +14,7 @@ Minimum collecting server for crash reports sent by
 
 * `npm install .`
 * `grunt`
-* Put your breakpad symbols under `pool/symbols/PRODUCT_NAME`
+* Put your breakpad symbols under `pool/symbols/`
 * `node lib/app.js`
 
 ## Building with Docker
