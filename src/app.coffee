@@ -31,7 +31,7 @@ app.post '/webhook', (req, res, next) ->
   res.end()
 
 app.post '/post', (req, res, next) ->
-  if req.query.token is process.env.token
+  if req.query.token is process.env.MINI_BREAKPAD_SERVER_TOKEN
     saver.saveRequest req, db, (err, filename) ->
       return next err if err?
 
