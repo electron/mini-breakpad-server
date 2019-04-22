@@ -1,0 +1,37 @@
+{{- if .Values.ingressPost.enabled -}}
+{{- $fullName := include "mini-breakpad-server.fullname" . -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-post
+  labels:
+    app.kubernetes.io/name: {{ include "mini-breakpad-server.name" . }}
+    helm.sh/chart: {{ include "mini-breakpad-server.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- with .Values.ingressPost.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.ingressPost.tls }}
+  tls:
+  {{- range .Values.ingressPost.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingressPost.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: /post
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: http
+  {{- end }}
+{{- end }}
