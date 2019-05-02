@@ -3,7 +3,7 @@ language: minimal
 services:
 - docker
 script:
-- docker/build.sh
+- docker/build.sh ${TRAVIS_BRANCH}
 deploy:
 - provider: script
   script: bash docker/publish_docker.sh ${TRAVIS_BRANCH}
